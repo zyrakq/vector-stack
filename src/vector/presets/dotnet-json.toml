@@ -1,0 +1,22 @@
+# dotnet-json
+## combo: "docker", "json"
+## sink: "openobserve"
+[sources.docker]
+type = "docker_logs"
+include_containers = ["dotnet-app"]
+
+[transforms.json]
+type = "remap"
+inputs = ["docker"]
+source = '''
+parsed = parse_json!(.message)
+
+. = merge!(., parsed)
+
+.original_message = .message
+.message = .MessageTemplate || .RenderedMessage || .message
+
+if exists(.Timestamp) {
+    .timestamp = parse_timestamp!(.Timestamp, format: "%+")
+}
+'''

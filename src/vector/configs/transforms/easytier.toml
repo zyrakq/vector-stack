@@ -1,0 +1,22 @@
+[transforms.easytier]
+type = "remap"
+inputs = ["docker"]
+
+source = '''
+.original_message = .message
+
+parsed, err = parse_regex(
+    .message,
+    r'^\d{4}-\d{2}-\d{2}T[\d:.]+Z\s+(?P<level>[A-Z]+)\s+(?P<module>[\w:]+):\s+(?:\[(?P<uuid>[^\]]+)\]\s+)?(?P<parsed_message>.*)$'
+)
+
+if err != null {
+    .level = "UNKNOWN"
+    .module = "unparsed"
+} else {
+    .level  = parsed.level
+    .module = parsed.module
+    .uuid   = parsed.uuid
+    .parsed_message = parsed.parsed_message
+}
+'''

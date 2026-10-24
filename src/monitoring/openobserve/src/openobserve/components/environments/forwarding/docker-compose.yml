@@ -1,0 +1,4 @@
+services:
+  openobserve:
+    ports:
+      - "5080:5080"

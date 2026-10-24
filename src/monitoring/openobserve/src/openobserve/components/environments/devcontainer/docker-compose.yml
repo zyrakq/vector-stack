@@ -1,0 +1,8 @@
+services:
+  openobserve:
+    networks:
+      - openobserve-workspace-network
+
+networks:
+  openobserve-workspace-network:
+    external: true

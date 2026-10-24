@@ -1,0 +1,21 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: ${LOG_MAX_SIZE:-10m}
+    max-file: ${LOG_MAX_FILE:-3}
+    compress: ${LOG_COMPRESS:-true}
+services:
+  vector:
+    container_name: vector
+    image: ${IMAGE:-timberio/vector:latest-alpine}
+    restart: unless-stopped
+    logging: *default-logging
+    environment:
+      VECTOR_CONFIG_DIR: ${VECTOR_CONFIG_DIR:-/etc/vector/configs}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - vector-data:${VECTOR_CONFIG_DIR:-/etc/vector/configs}
+volumes:
+  vector-data:
+    name: ${VECTOR_DATA:-vector-data}
+    external: ${VECTOR_DATA_EXTERNAL:-false}

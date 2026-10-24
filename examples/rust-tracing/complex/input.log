@@ -1,0 +1,36 @@
+664dba4e-663b-4500-8bb5-f447d06f7eb2 INFO     request [ 29.5µs | 100.00% ] method: GET | uri: /status | version: HTTP/1.1
+664dba4e-663b-4500-8bb5-f447d06f7eb2 INFO     ┕━ ｉ [info]:  | connection_addr: [::ffff:127.0.0.1]:37692 | client_ip_addr: ::ffff:127.0.0.1
+16e99564-a7b2-4473-ac67-b928241758f4 INFO     request [ 24.2µs | 100.00% ] method: GET | uri: /status | version: HTTP/1.1
+16e99564-a7b2-4473-ac67-b928241758f4 INFO     ┕━ ｉ [info]:  | connection_addr: [::ffff:127.0.0.1]:57182 | client_ip_addr: ::ffff:127.0.0.1
+8ecedae3-f22d-443c-9af0-c9ff5566e224 INFO     request [ 7.18ms | 17.05% / 100.00% ] method: GET | uri: /ui/apps | version: HTTP/1.1
+8ecedae3-f22d-443c-9af0-c9ff5566e224 INFO     ┝━ ｉ [info]:  | connection_addr: [::ffff:172.19.0.3]:37798 | client_ip_addr: ::ffff:172.19.0.3
+8ecedae3-f22d-443c-9af0-c9ff5566e224 INFO     ┝━ pre_validate_client_auth_info [ 5.53ms | 0.08% / 77.00% ]
+8ecedae3-f22d-443c-9af0-c9ff5566e224 INFO     │  ┕━ validate_client_auth_info_to_uat [ 5.52ms | 76.91% ]
+8ecedae3-f22d-443c-9af0-c9ff5566e224 INFO     │     ┕━ ｉ [info]: Session expired | event_tag_id: 10 | ct_odt: 2025-11-06 18:36:35.403344653 +00:00:00 | exp: 2025-10-19 22:40:49.0 +00:00:00
+8ecedae3-f22d-443c-9af0-c9ff5566e224 INFO     ┝━ handle_list_applinks [ 427µs | 0.38% / 5.95% ]
+8ecedae3-f22d-443c-9af0-c9ff5566e224 INFO     │  ┝━ validate_client_auth_info_to_ident [ 399µs | 5.57% ]
+8ecedae3-f22d-443c-9af0-c9ff5566e224 INFO     │  │  ┕━ ｉ [info]: Session expired | event_tag_id: 10 | ct_odt: 2025-11-06 18:36:35.409004875 +00:00:00 | exp: 2025-10-19 22:40:49.0 +00:00:00
+8ecedae3-f22d-443c-9af0-c9ff5566e224 ERROR    │  ┕━ 🚨 [error]: Invalid identity: SessionExpired
+8ecedae3-f22d-443c-9af0-c9ff5566e224 INFO     ┕━ ｉ [info]:  | latency: 7.178178ms | status_code: 303 | kopid: "8ecedae3-f22d-443c-9af0-c9ff5566e224" | msg: "client redirection sent",
+04b1da70-f59e-4b37-9f2a-c262351f94cf INFO     request [ 15.2ms | 6.12% / 100.00% ] method: POST | uri: /ui/login/passkey | version: HTTP/1.1
+04b1da70-f59e-4b37-9f2a-c262351f94cf INFO     ┝━ ｉ [info]:  | connection_addr: [::ffff:172.19.0.3]:51806 | client_ip_addr: ::ffff:172.19.0.3
+04b1da70-f59e-4b37-9f2a-c262351f94cf INFO     ┝━ pre_validate_client_auth_info [ 381µs | 0.04% / 2.50% ]
+04b1da70-f59e-4b37-9f2a-c262351f94cf INFO     │  ┕━ validate_client_auth_info_to_uat [ 374µs | 2.46% ]
+04b1da70-f59e-4b37-9f2a-c262351f94cf INFO     │     ┕━ ｉ [info]: Session expired | event_tag_id: 10 | ct_odt: 2025-11-11 1:19:00.844055893 +00:00:00 | exp: 2025-10-19 22:40:49.0 +00:00:00
+04b1da70-f59e-4b37-9f2a-c262351f94cf INFO     ┝━ auth [ 13.9ms | 91.38% ]
+04b1da70-f59e-4b37-9f2a-c262351f94cf INFO     │  ┝━ ｉ [info]: Begin auth event | event_tag_id: 10 | sessionid: Some(00000000-6912-8f01-0e54-96d026341562) | req: AuthRequest { step: Cred(Passkey(_)) }
+04b1da70-f59e-4b37-9f2a-c262351f94cf INFO     │  ┝━ ｉ [info]: Issuing Cookie session (PrivilegeCapable) b289fc93-52cd-4cbe-b24a-7548816fb53f for zyrakq@argiago.ru 0f92b175-fbe1-4e14-8c80-1b2e3eb6d751 | event_tag_id: 10
+04b1da70-f59e-4b37-9f2a-c262351f94cf INFO     │  ┕━ ｉ [info]: Sending auth result | event_tag_id: 10 | res: Ok(AuthResult { sessionid: 00000000-6912-8f01-0e54-96d026341562, state: AuthState::Success(Cookie) })
+04b1da70-f59e-4b37-9f2a-c262351f94cf INFO     ┕━ ｉ [info]:  | latency: 15.250903ms | status_code: 303 | kopid: "04b1da70-f59e-4b37-9f2a-c262351f94cf" | msg: "client redirection sent"
+787366fe-c187-475a-a362-1f796f45b9b2 INFO     process_delayed_action [ 22.4ms | 100.00% ]
+787366fe-c187-475a-a362-1f796f45b9b2 INFO     ┝━ ｉ [info]: Persisting auth session | session_id: b289fc93-52cd-4cbe-b24a-7548816fb53f
+787366fe-c187-475a-a362-1f796f45b9b2 INFO     ┝━ ｉ [info]: Removing expired auth session | session_id: 32d7f0a9-2c0e-44c4-96d5-9ca0b8a1cada
+787366fe-c187-475a-a362-1f796f45b9b2 INFO     ┕━ ｉ [info]: Removing expired oauth2 session | o2_session_id: 11280606-1426-49ce-9dd4-1d695d9609db,
+4e73ea82-f07d-4ef5-ab05-43c6ff1eff82 INFO     request [ 1.98ms | 23.63% / 100.00% ] method: POST | uri: /ui/login/mech_choose | version: HTTP/1.1
+4e73ea82-f07d-4ef5-ab05-43c6ff1eff82 INFO     ┝━ ｉ [info]:  | connection_addr: [::ffff:172.19.0.3]:33810 | client_ip_addr: ::ffff:172.19.0.3
+4e73ea82-f07d-4ef5-ab05-43c6ff1eff82 INFO     ┝━ pre_validate_client_auth_info [ 356µs | 0.40% / 17.98% ]
+4e73ea82-f07d-4ef5-ab05-43c6ff1eff82 INFO     │  ┕━ validate_client_auth_info_to_uat [ 348µs | 17.58% ]
+4e73ea82-f07d-4ef5-ab05-43c6ff1eff82 INFO     │     ┕━ ｉ [info]: Session expired | event_tag_id: 10 | ct_odt: 2025-11-11 1:18:58.660936852 +00:00:00 | exp: 2025-10-19 22:40:49.0 +00:00:00
+4e73ea82-f07d-4ef5-ab05-43c6ff1eff82 INFO     ┕━ auth [ 1.16ms | 58.40% ]
+4e73ea82-f07d-4ef5-ab05-43c6ff1eff82 INFO        ┝━ ｉ [info]: Begin auth event | event_tag_id: 10 | sessionid: Some(00000000-6912-8f01-0e54-96d026341562) | req: AuthRequest { step: Begin(Passkey) }
+4e73ea82-f07d-4ef5-ab05-43c6ff1eff82 INFO        ┕━ ｉ [info]: Sending auth result | event_tag_id: 10 | res: Ok(AuthResult { sessionid: 00000000-6912-8f01-0e54-96d026341562, state: AuthState::Continue([Passkey(RequestChallengeResponse { public_key: PublicKeyCredentialRequestOptions { challenge: Base64UrlSafeData([192, 198, 123, 149, 190, 99, 229, 42, 160, 130, 163, 84, 171, 189, 107, 148, 213, 52, 177, 54, 148, 248, 58, 95, 55, 233, 202, 185, 220, 244, 91, 103]), timeout: Some(300000), rp_id: "argiago.ru", allow_credentials: [AllowCredentials { type_: "public-key", id: Base64UrlSafeData([204, 176, 75, 20, 44, 4, 251, 152, 120, 94, 51, 162, 166, 74, 55, 117, 150, 132, 141, 32, 79, 246, 77, 11, 125, 123, 102, 142, 140, 233, 222, 111]), transports: None }], user_verification: Required, hints: None, extensions: None }, mediation: None })]) }),

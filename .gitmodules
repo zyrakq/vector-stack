@@ -1,0 +1,3 @@
+[submodule "src/monitoring/openobserve"]
+	path = src/monitoring/openobserve
+	url = https://github.com/zyrakq/openobserve-stack.git

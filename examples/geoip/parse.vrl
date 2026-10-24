@@ -1,0 +1,33 @@
+if .client_ip != null && .parse_error != true {
+  client_ip_str = string!(.client_ip)
+  
+  if !starts_with(client_ip_str, "192.168.") && 
+     !starts_with(client_ip_str, "10.") && 
+     !starts_with(client_ip_str, "127.") &&
+     client_ip_str != "::1" {
+    
+    geoip_data, geoip_err = get_enrichment_table_record("geoip", {"ip": client_ip_str})
+    
+    if geoip_err == null && geoip_data != null {
+      .geo_country_code = geoip_data.country_code
+      .geo_country_name = geoip_data.country_name
+      .geo_city_name = geoip_data.city_name
+      .geo_latitude = geoip_data.latitude
+      .geo_longitude = geoip_data.longitude
+      if .geo_latitude != null && .geo_longitude != null {
+        .geo_location = to_string!(.geo_latitude) + "," + to_string!(.geo_longitude)
+      }
+      .geo_enriched = true
+    } else {
+      .geo_enriched = false
+    }
+  } else {
+    .geo_country_code = "LOCAL"
+    .geo_country_name = "Local Network"
+    .geo_city_name = "Internal"
+    .geo_latitude = 0.0
+    .geo_longitude = 0.0
+    .geo_location = "0.0,0.0"
+    .geo_enriched = true
+  }
+}

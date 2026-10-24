@@ -1,0 +1,72 @@
+lines, err = split(.message, "\n")
+if err != null {
+  .parse_error = "Failed to split message"
+  abort
+}
+
+request_id = null
+level = null
+request_data = {}
+connection_data = {}
+
+if length(lines) > 0 {
+  first_line = get(lines, [0]) ?? ""
+  parsed, parse_err = parse_regex(first_line, r'^(?P<request_id>[a-f0-9-]+)\s+(?P<level>\w+)\s+(?P<content>.+)$')
+  
+  if parse_err == null && parsed != null {
+    request_id = parsed.request_id
+    level = parsed.level
+    
+    content = to_string(parsed.content)
+    if match(content, r'request \[') {
+      request_details, req_err = parse_regex(content, r'request \[\s*(?P<duration>[\d.]+[µmns]+)\s*\|\s*(?P<percentage>[\d.]+%)\s*\]\s*method:\s*(?P<method>\w+)\s*\|\s*uri:\s*(?P<uri>\S+)\s*\|\s*version:\s*(?P<version>HTTP/[\d.]+)')
+      
+      if req_err == null && request_details != null {
+        request_data = {
+          "duration": request_details.duration,
+          "percentage": request_details.percentage,
+          "method": request_details.method,
+          "uri": request_details.uri,
+          "http_version": request_details.version
+        }
+      }
+    }
+  }
+}
+
+if length(lines) > 1 {
+  second_line = get(lines, [1]) ?? ""
+  parsed2, parse_err2 = parse_regex(second_line, r'^(?P<request_id>[a-f0-9-]+)\s+(?P<level>\w+)\s+(?P<content>.+)$')
+  
+  if parse_err2 == null && parsed2 != null {
+    content2 = to_string(parsed2.content)
+    if match(content2, r'connection_addr:') {
+      conn_details, conn_err = parse_regex(content2, r'connection_addr:\s*(?P<conn_addr>\S+)\s*\|\s*client_ip_addr:\s*(?P<client_ip>\S+)')
+      
+      if conn_err == null && conn_details != null {
+        connection_data = {
+          "address": conn_details.conn_addr,
+          "client_ip": conn_details.client_ip
+        }
+      }
+    }
+  }
+}
+
+if request_id != null {
+  .request_id = request_id
+  .level = level
+  
+  if length(request_data) > 0 {
+    .request = request_data
+  }
+  
+  if length(connection_data) > 0 {
+    .connection = connection_data
+  }
+  
+  .origin_message = .message
+  del(.message)
+} else {
+  .parse_error = true
+}

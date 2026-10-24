@@ -1,0 +1,15 @@
+[sinks.loki]
+inputs = ["json", "multiline", "geoip", "rust_tracing"]
+type = "loki"
+endpoint = "http://loki:3100"
+dangerously_allow_unconfined_template_resolution = true
+
+[sinks.loki.labels]
+job = "Docker"
+level = "{{ level }}"
+module = "{{ module }}"
+container = "container_{{ .container_name | default(\"unknown\") }}"
+
+[sinks.loki.batch]
+max_events = 500
+timeout_secs = 1

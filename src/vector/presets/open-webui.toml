@@ -1,0 +1,98 @@
+# open-webui
+## combo: "docker", "uvicorn", "geoip"
+## sink: "openobserve"
+[sources.docker]
+type = "docker_logs"
+include_containers = ["open-webui"]
+
+
+[transforms.uvicorn]
+type = "remap"
+inputs = ["docker"]
+source = '''
+parsed, err = parse_regex(.message, r'^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) \| (?P<level>\w+)\s+\| (?P<logger>[\w\.:]+) - (?P<client_ip>[\d\.]+):(?P<client_port>\d+) - "(?P<method>\w+) (?P<path>[^"]+) (?P<protocol>[^"]+)" (?P<status_code>\d+)$')
+
+if err == null {
+    .timestamp = parse_timestamp!(parsed.timestamp, format: "%Y-%m-%d %H:%M:%S%.3f")
+    .level = parsed.level
+    .logger = parsed.logger
+    .client_ip = parsed.client_ip
+    .client_port = to_int!(parsed.client_port)
+    .http_method = parsed.method
+    .http_path = parsed.path
+    .http_protocol = parsed.protocol
+    .http_status_code = to_int!(parsed.status_code)
+    .parse_error = false
+    .parse_level = "full"
+} else {
+    parsed, err = parse_regex(.message, r'^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) \| (?P<level>\w+)\s+\| (?P<logger>[\w\.:]+) - (?P<content>.+)$')
+    if err == null {
+        .timestamp = parse_timestamp!(parsed.timestamp, format: "%Y-%m-%d %H:%M:%S%.3f")
+        .level = parsed.level
+        .logger = parsed.logger
+        .content = parsed.content
+        .parse_error = false
+        .parse_level = "partial"
+
+        log("Partial parse for uvicorn log: " + .logger, level: "info")
+    } else {
+        parsed, err = parse_regex(.message, r'^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) \| (?P<level>\w+)\s+\| (?P<rest>.+)$')
+        if err == null {
+            .timestamp = parse_timestamp!(parsed.timestamp, format: "%Y-%m-%d %H:%M:%S%.3f")
+            .level = parsed.level
+            .raw_content = parsed.rest
+            .parse_error = false
+            .parse_level = "minimal"
+
+            log("Minimal parse for uvicorn log", level: "info")
+        } else {
+            log("Failed to parse uvicorn log: " + err, level: "warn")
+            .parse_error = true
+            .parse_level = "failed"
+        }
+    }
+}
+'''
+
+[enrichment_tables.geoip]
+type = "geoip"
+path = "/etc/vector/geoip/geoip.mmdb"
+
+[transforms.geoip]
+type = "remap"
+inputs = ["uvicorn"]
+source = '''
+if .client_ip != null && .parse_error != true {
+    client_ip_str = string!(.client_ip)
+
+    if !starts_with(client_ip_str, "192.168.") && 
+        !starts_with(client_ip_str, "10.") && 
+        !starts_with(client_ip_str, "127.") &&
+        client_ip_str != "::1" {
+        
+        geoip_data, geoip_err = get_enrichment_table_record("geoip", {"ip": client_ip_str})
+        
+        if geoip_err == null && geoip_data != null {
+            .geo_country_code = geoip_data.country_code
+            .geo_country_name = geoip_data.country_name
+            .geo_city_name = geoip_data.city_name
+            .geo_latitude = geoip_data.latitude
+            .geo_longitude = geoip_data.longitude
+            if .geo_latitude != null && .geo_longitude != null {
+                .geo_location = to_string!(.geo_latitude) + "," + to_string!(.geo_longitude)
+            }
+            .geo_enriched = true
+        } else {
+            .geo_enriched = false
+        }
+    } else {
+        .geo_country_code = "LOCAL"
+        .geo_country_name = "Local Network"
+        .geo_city_name = "Internal"
+        .geo_latitude = 0.0
+        .geo_longitude = 0.0
+        .geo_location = "0.0,0.0"
+        .geo_enriched = true
+    }
+}
+'''

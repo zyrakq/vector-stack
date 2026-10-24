@@ -1,0 +1,11 @@
+[sources.http]
+type = "http_server"
+address = "0.0.0.0:8080"
+path = "/logs"
+method = "POST"
+headers = ["Content-Type"]
+auth.strategy = "basic"
+auth.username = "app-user"
+auth.password = "VDdXH2a7FkW7gw5zbdce8OvOlQ1LqlhF"
+decoding.codec = "bytes"
+framing.method = "bytes"

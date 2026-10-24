@@ -1,0 +1,9 @@
+[paths]
+environments_path = "./environments"
+extensions_dirs = ["extensions"]
+
+[build]
+extensions = ["geoip"]
+
+[build.environments]
+available = ["internal", "forwarding", "letsencrypt", "step-ca"]

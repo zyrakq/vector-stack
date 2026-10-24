@@ -1,0 +1,30 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: ${LOG_MAX_SIZE:-10m}
+    max-file: ${LOG_MAX_FILE:-3}
+    compress: ${LOG_COMPRESS:-true}
+services:
+  vector:
+    container_name: vector
+    image: ${IMAGE:-timberio/vector:latest-alpine}
+    restart: unless-stopped
+    logging: *default-logging
+    environment:
+      VECTOR_CONFIG_DIR: ${VECTOR_CONFIG_DIR:-/etc/vector/configs}
+      VIRTUAL_PORT: ${VIRTUAL_PORT:-8080}
+      VIRTUAL_HOST: ${VIRTUAL_HOST}
+      LETSENCRYPT_HOST: ${LETSENCRYPT_HOST}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - vector-data:${VECTOR_CONFIG_DIR:-/etc/vector/configs}
+    networks:
+      - step-ca-network
+volumes:
+  vector-data:
+    name: ${VECTOR_DATA:-vector-data}
+    external: ${VECTOR_DATA_EXTERNAL:-false}
+networks:
+  step-ca-network:
+    external: true

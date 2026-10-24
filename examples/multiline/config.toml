@@ -1,0 +1,121 @@
+data_dir = "/tmp/vector_data"
+
+[sources.jsonl_file]
+type = "file"
+include = ["./input-3.jsonl"]
+read_from = "beginning"
+ignore_checkpoints = true
+
+[transforms.prepare_data]
+type = "remap"
+inputs = ["jsonl_file"]
+drop_on_error = true
+source = '''
+line_json = parse_json!(string!(.message))
+message_data = parse_json!(string!(line_json.message))
+
+if is_array(message_data) {
+    array_length = length!(message_data)
+    if array_length > 0 {
+        .original_line = line_json
+        .parsed_array = message_data
+        .array_total = array_length
+    } else {
+        abort
+    }
+} else {
+    .original_line = line_json
+    .parsed_array = [message_data]
+    .array_total = 1
+}
+'''
+
+[transforms.multiline_generate]
+type = "lua"
+inputs = ["prepare_data"]
+version = "2"
+hooks.process = "process"
+source = '''
+function process(event, emit)
+    local log = event.log
+    
+    if not log.parsed_array then
+        return
+    end
+    
+    for i, item in ipairs(log.parsed_array) do
+        local new_event = {log = {}}
+        
+        for k, v in pairs(log.original_line) do
+            if k ~= "message" then
+                new_event.log[k] = v
+            end
+        end
+        
+        if type(item) == "table" then
+            for k, v in pairs(item) do
+                new_event.log[k] = v
+            end
+        else
+            new_event.log.message = tostring(item)
+        end
+        
+        new_event.log.array_index = i - 1
+        new_event.log.array_total = log.array_total
+        new_event.log.split_from_array = true
+        
+        emit(new_event)
+    end
+end
+'''
+
+[transforms.multiline]
+type = "remap"
+inputs = ["multiline_generate"]
+source = '''
+if exists(."@i") {
+    .id = del(."@i")
+}
+
+if exists(."@l") {
+    .level = del(."@l")
+}
+
+if exists(."@mt") {
+    .message_template = del(."@mt")
+}
+
+if exists(."@m") {
+    .message = del(."@m")
+}
+
+if exists(."@t") {
+    .timestamp = del(."@t")
+}
+
+if exists(."_i") {
+    .id = del(."_i")
+}
+
+if exists(."_l") {
+    .level = del(."_l")
+}
+
+if exists(."_mt") {
+    .message_template = del(."_mt")
+}
+
+if exists(."_m") {
+    .message = del(."_m")
+}
+
+if exists(."_t") {
+    .timestamp = del(."_t")
+}
+
+'''
+
+[sinks.console_output]
+type = "console"
+inputs = ["multiline"]
+encoding.codec = "json"

@@ -1,0 +1,13 @@
+{
+  "message": "2024-01-15 14:30:25.123 | INFO | uvicorn.access - 192.168.0.45:54321 - \"GET /api/users HTTP/1.1\" 200",
+  "timestamp": "2024-01-15T14:30:25.123Z",
+  "level": "INFO",
+  "logger": "uvicorn.access",
+  "client_ip": "192.168.0.45",
+  "client_port": 54321,
+  "http_method": "GET",
+  "http_path": "/api/users",
+  "http_protocol": "HTTP/1.1",
+  "http_status_code": 200,
+  "parse_error": false
+}

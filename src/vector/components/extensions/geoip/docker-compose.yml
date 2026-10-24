@@ -1,0 +1,11 @@
+services:
+  vector:
+    image: ${IMAGE:-"localhost/vector-geoip-alpine:latest"}
+    environment:
+      GEOIP_SOURCE: ${GEOIP_SOURCE:-"geolite2-city"}
+    volumes:
+      - geoip:/etc/vector/geoip
+
+volumes:
+  geoip:
+    name: geoip

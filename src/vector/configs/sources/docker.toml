@@ -1,0 +1,3 @@
+[sources.docker]
+type = "docker_logs"
+include_containers = ["container_one", "container_two"]

@@ -1,0 +1,12 @@
+[sinks.openobserve]
+inputs = ["json", "multiline", "geoip", "rust_tracing"]
+healthcheck.enabled = false
+type = "http"
+uri = "https://openobserve.example.com/api/default/default/_json"
+method = "post"
+auth.strategy = "basic"
+auth.user = "john.smith@mail.com"
+auth.password = "srnH2cNNR8q3ft7KVjAXUs"
+compression = "gzip"
+encoding.codec = "json"
+encoding.timestamp_format = "rfc3339"

@@ -1,0 +1,20 @@
+[transforms.json_batch]
+type = "remap"
+inputs = ["http"]
+drop_on_error = true
+source = '''
+message_data = parse_json!(string!(.message))
+
+if is_array(message_data) {
+    array_length = length!(message_data)
+    if array_length > 0 {
+        .parsed_array = message_data
+        .array_total = array_length
+    } else {
+        abort
+    }
+} else {
+    .parsed_array = [message_data]
+    .array_total = 1
+}
+'''

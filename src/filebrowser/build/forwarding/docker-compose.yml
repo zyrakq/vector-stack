@@ -1,0 +1,26 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: ${LOG_MAX_SIZE:-10m}
+    max-file: ${LOG_MAX_FILE:-3}
+    compress: ${LOG_COMPRESS:-true}
+services:
+  filebrowser:
+    container_name: filebrowser
+    image: ${IMAGE:-filebrowser/filebrowser:latest}
+    restart: unless-stopped
+    logging: *default-logging
+    volumes:
+      - filebrowser-config:/config
+      - filebrowser-db:/database
+      - filebrowser-data:/srv
+    ports:
+      - 8080:80
+volumes:
+  filebrowser-config:
+    name: filebrowser-config
+  filebrowser-db:
+    name: filebrowser-db
+  filebrowser-data:
+    name: ${FILEBROWSER_DATA:-filebrowser-data}
+    external: ${FILEBROWSER_DATA_EXTERNAL:-false}

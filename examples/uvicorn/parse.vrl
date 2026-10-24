@@ -1,0 +1,44 @@
+parsed, err = parse_regex(.message, r'^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) \| (?P<level>\w+)\s+\| (?P<logger>[\w\.:]+) - (?P<client_ip>[\d\.]+):(?P<client_port>\d+) - "(?P<method>\w+) (?P<path>[^"]+) (?P<protocol>[^"]+)" (?P<status_code>\d+)$')
+
+if err == null {
+  .timestamp = parse_timestamp!(parsed.timestamp, format: "%Y-%m-%d %H:%M:%S%.3f")
+  .level = parsed.level
+  .logger = parsed.logger
+  .client_ip = parsed.client_ip
+  .client_port = to_int!(parsed.client_port)
+  .http_method = parsed.method
+  .http_path = parsed.path
+  .http_protocol = parsed.protocol
+  .http_status_code = to_int!(parsed.status_code)
+  .parse_error = false
+  .parse_level = "full"
+} else {
+  parsed, err = parse_regex(.message, r'^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) \| (?P<level>\w+)\s+\| (?P<logger>[\w\.:]+) - (?P<content>.+)$')
+  
+  if err == null {
+    .timestamp = parse_timestamp!(parsed.timestamp, format: "%Y-%m-%d %H:%M:%S%.3f")
+    .level = parsed.level
+    .logger = parsed.logger
+    .content = parsed.content
+    .parse_error = false
+    .parse_level = "partial"
+    
+    log("Partial parse for uvicorn log: " + .logger, level: "info")
+  } else {
+    parsed, err = parse_regex(.message, r'^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) \| (?P<level>\w+)\s+\| (?P<rest>.+)$')
+    
+    if err == null {
+      .timestamp = parse_timestamp!(parsed.timestamp, format: "%Y-%m-%d %H:%M:%S%.3f")
+      .level = parsed.level
+      .raw_content = parsed.rest
+      .parse_error = false
+      .parse_level = "minimal"
+      
+      log("Minimal parse for uvicorn log", level: "info")
+    } else {
+      log("Failed to parse uvicorn log: " + err, level: "warn")
+      .parse_error = true
+      .parse_level = "failed"
+    }
+  }
+}
